@@ -31,11 +31,12 @@ int main()
         return -1;
 
     DWORD dwWritten, dwRead;
-    
+
 
     char ch;
     int num = 0;
     int count_request = 0;
+    int ch_end = 0;
 
     int x, result;
 
@@ -44,31 +45,37 @@ int main()
 
         if (ch == 0x20 || ch == 0X0A) {  // code space key or code enter key
             x = num;
-            
+
             WriteFile(g_hChildStd_IN_Wr, &x, sizeof(int), &dwWritten, NULL);
 
             if (count_request != 0) {
                 if (!ReadFile(g_hChildStd_OUT_Rd, &result, sizeof(int), &dwRead, NULL))
                     return -1;
-
-                printf("Result call %d: %d\n", count_request, result);
+                if ((char)result != 'E') {
+                    printf("Result call %d: %d\n", count_request, result);
+                } else {
+                    printf("Error from child proccess\n");
+                }
             }
             count_request++;
-            
+
             if (ch == 0x20) {
                 num = 0;
+                ch_end = 0;
                 continue;
             }
-                
-            if (ch == 0x0A)
-                break;
-        }
 
+            if (ch == 0x0A) {
+                if (ch_end == 2)
+                    break;
+                ++ch_end;
+            }                
+        }
         num = 10 * num + (ch - '0');
     }
 
     printf("Finish calc\n");
-    
+
     return 0;
 }
 
@@ -107,8 +114,7 @@ int CreateChildProcess()
      // If an error occurs, exit the application. 
     if (!bSuccess)
         return -1;
-    else
-    {
+    else {
         CloseHandle(piProcInfo.hProcess);
         CloseHandle(piProcInfo.hThread);
 
