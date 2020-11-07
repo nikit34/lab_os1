@@ -3,8 +3,8 @@
 #include "string"
 #include <iostream>
 
-int main()
-{
+ 
+int main() {
     HANDLE readHandle = GetStdHandle(STD_INPUT_HANDLE);
     HANDLE writeHandle = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD readedBytes, writedBytes;
@@ -16,14 +16,14 @@ int main()
     std::string str_res;
 
     HANDLE hFile = CreateFile(
-        L"logs.txt",     
-        GENERIC_WRITE,        
-        FILE_SHARE_READ,      
-        NULL,                 
+        L"logs.txt",
+        GENERIC_WRITE,
+        FILE_SHARE_READ,
+        NULL,
         CREATE_ALWAYS,
         FILE_ATTRIBUTE_NORMAL,
         NULL);
-    
+
     while (true) {
         if (!ReadFile(readHandle, &x, sizeof(int), &readedBytes, NULL))
             return -1;
@@ -41,11 +41,12 @@ int main()
                 str_res = std::to_string(res);
                 WriteFile(hFile, str_res.c_str(), str_res.size(), &writedBytes, NULL);
                 WriteFile(writeHandle, &res, sizeof(int), &writedBytes, NULL);
-            } else {
+            }
+            else {
                 WriteFile(writeHandle, "E", 1, &writedBytes, NULL);
                 //res = 0;
             }
-            
+
 
 
         }
